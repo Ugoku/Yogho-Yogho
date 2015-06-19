@@ -26,17 +26,18 @@ class Palette extends Yogho
 		fseek ($handle, $offsetMain);
 
 		// Start screens use a palette of 256 colors. Levels use a base palette of 192 colors and a level-specific palette of 64 colors
-		$colors = (is_null($offsetSecond) ? 256 : 192);
-		for ($color = 0; $color < $colors; $color++) {
-			$this->palette[] = $this->readRGB($handle);
-		}
-
 		if (!is_null($offsetSecond)) {
 			fseek ($handle, $offsetSecond);
-			for ($color = 192; $color < 256; $color++) {
+			for ($color = 0; $color < 64; $color++) {
 				$this->palette[] = $this->readRGB($handle);
 			}
 		}
+
+		$colors = (is_null($offsetSecond) ? 256 : 192);
+		for ($color = (256 - $colors); $color < $colors; $color++) {
+			$this->palette[] = $this->readRGB($handle);
+		}
+
 
 		fclose ($handle);
 	}
