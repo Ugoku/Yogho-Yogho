@@ -22,12 +22,12 @@ class Palette extends Yogho
 			$offsetSecond = $offsets::getOffset('palette', $level);
 		}
 
-		$handle = fopen ($this::FILENAME, 'rb');
-		fseek ($handle, $offsetMain);
+		$handle = fopen($this::FILENAME, 'rb');
+		fseek($handle, $offsetMain);
 
 		// Start screens use a palette of 256 colors. Levels use a base palette of 192 colors and a level-specific palette of 64 colors
 		if (!is_null($offsetSecond)) {
-			fseek ($handle, $offsetSecond);
+			fseek($handle, $offsetSecond);
 			for ($color = 0; $color < 64; $color++) {
 				$this->palette[] = $this->readRGB($handle);
 			}
@@ -39,7 +39,7 @@ class Palette extends Yogho
 		}
 
 
-		fclose ($handle);
+		fclose($handle);
 	}
 
 
