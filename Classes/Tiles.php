@@ -19,7 +19,7 @@ class Tiles extends Yogho
 		'bonus4' => 495,
 	];
 	const TILESIZE = 16; // Tiles are always square, so we can use a single constant for both width and height
-	const TILES_PER_ROW = 32; //TODO: not yet used
+	const TILES_PER_ROW = 16;
 
 
 	public function __construct($level)
@@ -37,6 +37,7 @@ class Tiles extends Yogho
 
 		for ($tile = 0; $tile < $nrOfTiles; $tile++) {
 			for ($pixel = 0; $pixel < ($this::TILESIZE * $this::TILESIZE); $pixel++) {
+				// I hate arithmetic like this
 				$x = 15 - ((((3 - ($pixel % 4)) * 4) + floor ($pixel / 64)));
 				$y = (floor($pixel / 4) % 16);
 				$value = ord (fread ($handle, 1));
@@ -57,15 +58,17 @@ class Tiles extends Yogho
 		}
 
 		$nrOfTiles = $this::TILECOUNTS[$this->level];
-		$image = imagecreatetruecolor($this::TILESIZE, $this::TILESIZE * $nrOfTiles);
+		$image = imagecreatetruecolor($this::TILESIZE * $this::TILES_PER_ROW, ceil($nrOfTiles / $this::TILES_PER_ROW) * $this::TILESIZE);
 
 		for ($tile = 0; $tile < $nrOfTiles; $tile++) {
 			for ($y = 0; $y < $this::TILESIZE; $y++) {
 				for ($x = 0; $x < $this::TILESIZE; $x++) {
 					list($r, $g, $b) = $this->tiles[$tile][$x][$y];
 					$color = imagecolorallocate($image, $r, $g, $b);
-					$trueY = ($tile * $this::TILESIZE) + $y;
-					imagesetpixel($image, $x, $trueY, $color);
+					// Did I mention how much I hate arithmetic like this?
+					$trueX = (($tile % $this::TILES_PER_ROW) * $this::TILESIZE) + $x;
+					$trueY = (floor($tile / $this::TILES_PER_ROW) * $this::TILESIZE) + $y;
+					imagesetpixel($image, $trueX, $trueY, $color);
 				}
 			}
 		}
