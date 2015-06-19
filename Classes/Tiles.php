@@ -32,21 +32,21 @@ class Tiles extends Yogho
 
 		$nrOfTiles = $this::TILECOUNTS[$level];
 
-		$handle = fopen ($this::FILENAME, 'rb');
-		fseek ($handle, $offsets::getOffset('tiles', $level));
+		$handle = fopen($this::FILENAME, 'rb');
+		fseek($handle, $offsets::getOffset('tiles', $level));
 
 		for ($tile = 0; $tile < $nrOfTiles; $tile++) {
 			for ($pixel = 0; $pixel < ($this::TILESIZE * $this::TILESIZE); $pixel++) {
 				// I hate arithmetic like this
-				$x = 15 - ((((3 - ($pixel % 4)) * 4) + floor ($pixel / 64)));
+				$x = 15 - ((((3 - ($pixel % 4)) * 4) + floor($pixel / 64)));
 				$y = (floor($pixel / 4) % 16);
-				$value = ord (fread ($handle, 1));
+				$value = ord(fread($handle, 1));
 				$rgb = $palette[$value];
-				$this->tiles[$tile][$x][$y] = $rgb; //TODO: is it better to store $value here?
+				$this->tiles[$tile][$x][$y] = $rgb;
 			}
 		}
 
-		fclose ($handle);
+		fclose($handle);
 	}
 
 
