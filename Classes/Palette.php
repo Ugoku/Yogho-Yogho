@@ -3,30 +3,25 @@ namespace Yogho;
 
 class Palette extends Yogho
 {
-	const OFFSET_SPRITES = 66496;
-	const OFFSET_STARTSCREEN = 515825;
-	const OFFSET_LEVEL_1 = 698137;
-	const OFFSET_LEVEL_2 = 806041;
-	const OFFSET_LEVEL_3 = 917849;
-	const OFFSET_LEVEL_4 = 1055513;
-	const OFFSET_LEVEL_5 = 1190937;
-	const OFFSET_LEVEL_6 = 1321049;
-	const OFFSET_BONUS_1 = 1463897;
-	const OFFSET_BONUS_2 = 1588625;
-	const OFFSET_BONUS_3 = 1723513;
-	const OFFSET_BONUS_4 = 1852769;
-
 	public $palette;
 
 
 	/**
 	 * Set the palette for use in other functions
 	 *
-	 * @param int $offsetMain Offset for the palette. If none is specified, the palette for the start screens is used
-	 * @param int|null $offsetSecond Offset for the extra colors (optional)
+	 * @param int|string $level Level to get the palette for. This can also be 'start' to get the palette for the start screen
 	 */
-	public function __construct($offsetMain = 515825, $offsetSecond = null)
+	public function __construct($level = 'start')
 	{
+		$offsets = new Offsets;
+		if ($level == 'start') {
+			$offsetMain = $offsets::getOffset('palette', $level);
+			$offsetSecond = null;
+		} else {
+			$offsetMain = $offsets::getOffset('palette', 'sprites');
+			$offsetSecond = $offsets::getOffset('palette', $level);
+		}
+
 		$handle = fopen ($this::FILENAME, 'rb');
 		fseek ($handle, $offsetMain);
 
