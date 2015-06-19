@@ -4,9 +4,9 @@ Collection of resources and script for the 1995 MS DOS game Yogho Yogho
 # How to get started
 You will need the original game files. [You can get the game here](http://www.abandonia.com/en/games/732/) I do not know if there are multiple versions of this game, but I don't think so. However, I can only guarantee these scripts work if your YOGHODAT.DAT file matches the following checksums:
 
-- CRC32: 603106407
-- MD5: f0969aab218dad90b8d9dcc9c0c51a1b
-- SHA1: c830e4df5b461973c53849faf1534b1cdf02b03d
+- CRC32: `603106407`
+- MD5: `f0969aab218dad90b8d9dcc9c0c51a1b`
+- SHA1: `c830e4df5b461973c53849faf1534b1cdf02b03d`
 
 You can check the checksums of your copy by running `hashes.php`
 
@@ -14,6 +14,8 @@ TODO: expand
 
 # Why ?
 I loved Yogho Yogho as a kid, both [the drink](http://www.yoghoyogho.nl/nl) and the game. But it was a tough game, there are no save games. So if you got "game over"on level 5, you would have to start again all the way in level 1. I *think* I managed to finish the game back then, but I am not sure.
+
+I started these scripts in 2013 but decided to rework it into a nice open-source collection of scripts in 2015.
 
 TODO: expand
 
@@ -27,3 +29,10 @@ Next up, I took the offset of this palette (let's say it started at byte 0x2420)
 There were a few parts that stood out: one part of exactly 12800 bytes, two of 64000 bytes and one of 48000 bytes. Since 320x200 (the size of the screen mode) is 64000, I assumed these were some kind of full screen images. So I corrupted the data file in these parts to see its effect. And yes: I found the menu screen and the high score background (both 320x200 pixels). The file of 12800 bytes turned out to be a 320x40 pixel image that is used as "status bar" in the game, the 48000 byte file is used as intro screen for the levels.
 
 TODO: expand
+
+# How levels work
+First, there are tiles. Tiles are 16x16 pixels and are level-specific. Tiles can use 64 level-specific colors, combined with 192 global colors. Each level has ~400-500 tiles.
+
+Those tiles are combined into 512 blocks, consisting of 2x2 tiles each. Each tile inside a block can be mirrored and/or flipped.
+
+The blocks are the real basis for the levels.
