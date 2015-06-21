@@ -22,6 +22,11 @@ class Tiles extends Yogho
 	const TILES_PER_ROW = 16;
 
 
+	/**
+	 * Load tiles for a certain level
+	 *
+	 * @param int|string $level
+	 */
 	public function __construct($level)
 	{
 		$this->level = $level;
@@ -50,13 +55,30 @@ class Tiles extends Yogho
 	}
 
 
+	/**
+	 * Output the tiles to an image
+	 *
+	 * @param string|null $filename
+	 */
 	public function toImage($filename = null)
 	{
 		set_time_limit(60);
 		if (is_null($filename)) {
 			header('Content-type: image/png');
 		}
+		$image = $this->toResource();
 
+		imagepng($image, $filename);
+		imagedestroy($image);
+	}
+
+
+	/**
+	 * Returns the tile image as a resource
+	 * @return resource
+	 */
+	public function toResource()
+	{
 		$nrOfTiles = $this::TILECOUNTS[$this->level];
 		$image = imagecreatetruecolor($this::TILESIZE * $this::TILES_PER_ROW, ceil($nrOfTiles / $this::TILES_PER_ROW) * $this::TILESIZE);
 
@@ -72,7 +94,6 @@ class Tiles extends Yogho
 				}
 			}
 		}
-		ImagePNG ($image, $filename);
-		ImageDestroy ($image);
+		return $image;
 	}
 }
