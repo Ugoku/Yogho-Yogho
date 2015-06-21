@@ -71,19 +71,31 @@ class Palette extends Yogho
 		if (is_null($filename)) {
 			header('Content-type: image/png');
 		}
+		$image = $this->toResource();
+
+		imagepng($image, $filename);
+		imagedestroy($image);
+	}
+
+
+	/**
+	 * Returns the palette as image resource
+	 *
+	 * @return resource
+	 */
+	public function toResource()
+	{
 		$image = imagecreatetruecolor(256, 256);
 
 		for ($color = 0; $color <= 255; $color++) {
-			$y = floor ($color / 16);
+			$y = floor($color / 16);
 			$x = $color - ($y * 16);
 
 			list($r, $g, $b) = $this->palette[$color];
-			$currentColor = ImageColorAllocate ($image, $r, $g, $b);
+			$currentColor = imagecolorallocate($image, $r, $g, $b);
 
-			ImageFilledRectangle ($image, $x * 16, $y * 16, ($x * 16) + 15, ($y * 16) + 15, $currentColor);
+			imagefilledrectangle($image, $x * 16, $y * 16, ($x * 16) + 15, ($y * 16) + 15, $currentColor);
 		}
-
-		ImagePNG ($image, $filename);
-		ImageDestroy ($image);
+		return $image;
 	}
 }
