@@ -27,7 +27,7 @@ class Tiles extends Yogho
 	 *
 	 * @param int|string $level
 	 */
-	public function __construct($level)
+	public function __construct(string $level)
 	{
 		$this->level = $level;
 
@@ -41,13 +41,16 @@ class Tiles extends Yogho
 		fseek($handle, $offsets::getOffset('tiles', $level));
 
 		for ($tile = 0; $tile < $nrOfTiles; $tile++) {
+			$this->tiles[$tile] = imagecreatetruecolor($this::TILESIZE, $this::TILESIZE);
 			for ($pixel = 0; $pixel < ($this::TILESIZE * $this::TILESIZE); $pixel++) {
 				// I hate arithmetic like this
 				$x = 15 - ((((3 - ($pixel % 4)) * 4) + floor($pixel / 64)));
-				$y = (floor($pixel / 4) % 16);
+				$y = floor($pixel / 4) % 16;
 				$value = ord(fread($handle, 1));
-				$rgb = $palette[$value];
-				$this->tiles[$tile][$x][$y] = $rgb;
+
+				list($r, $g, $b) = $palette[$value];
+				$color = imagecolorallocate($this->tiles[$tile], $r, $g, $b);
+				imagesetpixel($this->tiles[$tile], $x, $y, $color);
 			}
 		}
 
@@ -60,7 +63,7 @@ class Tiles extends Yogho
 	 *
 	 * @param string|null $filename
 	 */
-	public function toImage($filename = null)
+	public function toImage(string $filename = null)
 	{
 		set_time_limit(60);
 		if (is_null($filename)) {
@@ -68,7 +71,9 @@ class Tiles extends Yogho
 		}
 		$image = $this->toResource();
 
-		imagepng($image, $filename);
+        @mkdir('./tiles');
+
+        imagepng($image, './tiles/' . $filename . '.png');
 		imagedestroy($image);
 	}
 
@@ -83,16 +88,9 @@ class Tiles extends Yogho
 		$image = imagecreatetruecolor($this::TILESIZE * $this::TILES_PER_ROW, ceil($nrOfTiles / $this::TILES_PER_ROW) * $this::TILESIZE);
 
 		for ($tile = 0; $tile < $nrOfTiles; $tile++) {
-			for ($y = 0; $y < $this::TILESIZE; $y++) {
-				for ($x = 0; $x < $this::TILESIZE; $x++) {
-					list($r, $g, $b) = $this->tiles[$tile][$x][$y];
-					$color = imagecolorallocate($image, $r, $g, $b);
-					// Did I mention how much I hate arithmetic like this?
-					$trueX = (($tile % $this::TILES_PER_ROW) * $this::TILESIZE) + $x;
-					$trueY = (floor($tile / $this::TILES_PER_ROW) * $this::TILESIZE) + $y;
-					imagesetpixel($image, $trueX, $trueY, $color);
-				}
-			}
+			$x = (($tile % $this::TILES_PER_ROW) * $this::TILESIZE);
+			$y = (floor($tile / $this::TILES_PER_ROW) * $this::TILESIZE);
+			imagecopy($image, $this->tiles[$tile], $x, $y, 0, 0, $this::TILESIZE, $this::TILESIZE);
 		}
 		return $image;
 	}
