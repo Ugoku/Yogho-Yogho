@@ -4,7 +4,7 @@ namespace Yogho;
 class Blocks extends Yogho
 {
 	private $level;
-	private $tiles;
+	private $tileImg;
 	public $blocks;
 
 	const FLIP_X = 2;
@@ -17,14 +17,13 @@ class Blocks extends Yogho
 	const BLOCKS_PER_ROW = 16; //TODO: not yet used
 
 
-	public function __construct($level = 1)
+	public function __construct(string $level = '1')
 	{
 		$this->level = $level;
+        $this->tileImg = imagecreatefrompng('./tiles/' . $level . '.png');
 
 		$offsets = new Offsets;
 		$baseOffset = $offsets::getOffset('blocks', $level);
-		$tiles = new Tiles($level);
-		$this->tiles = $tiles->tiles;
 
 		$handle = fopen ($this::FILENAME, 'rb');
 
@@ -34,71 +33,40 @@ class Blocks extends Yogho
 				$offset += 511;
 			}
 
-			// Top left
-			fseek($handle, $offset);
-			$tileTL = $this->getTile($handle);
-
-			// Top right
-			fseek($handle, 1022, SEEK_CUR);
-			$tileTR = $this->getTile($handle);
-
-			// Bottom left
-			fseek($handle, 1022, SEEK_CUR);
-			$tileBL = $this->getTile($handle);
-
-			// Bottom right
-			fseek($handle, 1022, SEEK_CUR);
-			$tileBR = $this->getTile($handle);
-
-			$this->addTile($this->blocks[$block], $tileTL,  0,  0);
-			$this->addTile($this->blocks[$block], $tileTR, 16,  0);
-			$this->addTile($this->blocks[$block], $tileBL,  0, 16);
-			$this->addTile($this->blocks[$block], $tileBR, 16, 16);
+			$this->addBlock($handle, $offset, $block);
 		}
 
 		fclose($handle);
 	}
 
+	private function addBlock(&$handle, int &$offset, int $idx)
+    {
+        // Top left
+        fseek($handle, $offset);
+        $tileTL = $this->getTile($handle);
 
-	private function addTile(&$block, $tile, $atX, $atY)
-	{
-		for ($y = 0; $y < $this::TILESIZE; $y++) {
-			for ($x = 0; $x < $this::TILESIZE; $x++) {
-				$block[$atX + $x][$atY + $y] = $tile[$x][$y];
-			}
-		}
-	}
+        // Top right
+        fseek($handle, 1022, SEEK_CUR);
+        $tileTR = $this->getTile($handle);
 
-	private function flipTileX($tile)
-	{
-		$halfWidth = (int) floor(($this::TILESIZE - 1) / 2);
+        // Bottom left
+        fseek($handle, 1022, SEEK_CUR);
+        $tileBL = $this->getTile($handle);
 
-		for ($x = $halfWidth; $x >= 0; $x--) {
-			for ($y = 0; $y < $this::TILESIZE; $y++) {
-				$temp = $tile[($this::TILESIZE - 1) - $x][$y];
-				$tile[($this::TILESIZE - 1) - $x][$y] = $tile[$x][$y];
-				$tile[$x][$y] = $temp;
-			}
-		}
+        // Bottom right
+        fseek($handle, 1022, SEEK_CUR);
+        $tileBR = $this->getTile($handle);
 
-		return $tile;
-	}
+        $this->blocks[$idx] = [
+            [$tileTL, $tileTR],
+            [$tileBL, $tileBR],
+        ];
+    }
 
-
-	private function flipTileY($tile)
-	{
-		$halfHeight = (int) floor(($this::TILESIZE - 1) / 2);
-
-		for ($y = $halfHeight; $y >= 0; $y--) {
-			for ($x = 0; $x < $this::TILESIZE; $x++) {
-				$temp = $tile[$x][($this::TILESIZE - 1) - $y];
-				$tile[$x][($this::TILESIZE - 1) - $y] = $tile[$x][$y];
-				$tile[$x][$y] = $temp;
-			}
-		}
-		return $tile;
-	}
-
+    private function copyTile($fromImg, &$toImg, int $destX, int $destY, int $srcX = 0, int $srcY = 0)
+    {
+        imagecopy($toImg, $fromImg, $destX, $destY, $srcX,$srcY, $this::TILESIZE, $this::TILESIZE);
+    }
 
 	private function getTile(&$handle)
 	{
@@ -107,18 +75,24 @@ class Blocks extends Yogho
 		if ($special & $this::INCREASE_INDEX) {
 			$index += 256;
 		}
-		$tile = $this->tiles[$index];
+
+        $tileX = ($index % Tiles::TILES_PER_ROW) * $this::TILESIZE;
+        $tileY = floor($index / Tiles::TILES_PER_ROW) * $this::TILESIZE;
+
+        $temptile = imagecreatetruecolor($this::TILESIZE, $this::TILESIZE);
+        $this->copyTile($this->tileImg, $temptile, 0, 0, $tileX, $tileY);
+
 		if ($special & $this::FLIP_X) {
-			$tile = $this->flipTileX($tile);
+            imageflip($temptile, IMG_FLIP_HORIZONTAL);
 		}
 		if ($special & $this::FLIP_Y) {
-			$tile = $this->flipTileY($tile);
-		}
-		return $tile;
+            imageflip($temptile, IMG_FLIP_VERTICAL);
+        }
+		return $temptile;
 	}
 
 
-	public function toImage($filename = null)
+	public function toImage(string $filename = null)
 	{
 		set_time_limit(60);
 		if (is_null($filename)) {
@@ -127,16 +101,16 @@ class Blocks extends Yogho
 		$image = imagecreatetruecolor(2 * $this::TILESIZE, 2 * $this::TILESIZE * $this::BLOCKS);
 
 		for ($block = 0; $block < $this::BLOCKS; $block++) {
-			for ($y = 0; $y < (2 * $this::TILESIZE); $y++) {
-				for ($x = 0; $x < (2 * $this::TILESIZE); $x++) {
-					list($r, $g, $b) = $this->blocks[$block][$x][$y];
-					$color = imagecolorallocate($image, $r, $g, $b);
-					$trueY = ($block * 2 * $this::TILESIZE) + $y;
-					imagesetpixel($image, $x, $trueY, $color);
-				}
-			}
+            $trueY = ($block * 2 * $this::TILESIZE);
+            $this->copyTile($this->blocks[$block][0][0], $image, 0, $trueY);
+            $this->copyTile($this->blocks[$block][0][1], $image, $this::TILESIZE, $trueY);
+            $this->copyTile($this->blocks[$block][1][0], $image, 0, $trueY + $this::TILESIZE);
+            $this->copyTile($this->blocks[$block][1][1], $image, $this::TILESIZE, $trueY + $this::TILESIZE);
 		}
-		ImagePNG ($image, $filename);
+
+        @mkdir('./blocks');
+
+        imagepng($image, './blocks/' . $filename . '.png');
 		ImageDestroy ($image);
 	}
 }
