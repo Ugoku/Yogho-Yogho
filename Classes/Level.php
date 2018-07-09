@@ -7,8 +7,14 @@ class Level extends Yogho
     private $level;
 	public $levelData;
 
+    const INCREASE_INDEX_HIGH = 1;
+    const INCREASE_INDEX_LOW = 2;
 	const FLIP_X = 4;
 	const FLIP_Y = 8;
+	// 16 is unused in the entire game
+	const LADDER = 32;
+	const DEATH = 64;
+	const CRAWL = 128;
 
 	const BLOCKSIZE = 32;
 	const DIMENSIONS = [
@@ -44,13 +50,11 @@ class Level extends Yogho
 				$block = ord(fread($handle, 1));
 				$special = ord(fread($handle, 1));
 
-				$baseX = 0;
-				if ($special & 1) {
+				if ($special & $this::INCREASE_INDEX_HIGH) {
 					$block += 256;
 				}
-				if ($special & 2) {
+				if ($special & $this::INCREASE_INDEX_LOW) {
 					$block++;
-					$baseX = $this::BLOCKSIZE;
 				}
 
 				$thisBlock = $this->getBlock($block);

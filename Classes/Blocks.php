@@ -9,7 +9,7 @@ class Blocks extends Yogho
 
 	const FLIP_X = 2;
 	const FLIP_Y = 4;
-	const UNKNOWN = 8; //TODO: figure out what this is
+	// 8, 32, 64, 128 are unused in the entire game
 	const INCREASE_INDEX = 16;
 
 	const BLOCKS = 512;
@@ -88,6 +88,7 @@ class Blocks extends Yogho
 		if ($special & $this::FLIP_Y) {
             imageflip($temptile, IMG_FLIP_VERTICAL);
         }
+
 		return $temptile;
 	}
 
