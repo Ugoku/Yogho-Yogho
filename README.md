@@ -17,7 +17,7 @@ I loved Yogho Yogho as a kid, both [the drink](http://www.yoghoyogho.nl/nl) and 
 
 I started these scripts in 2013 but decided to rework it into a nice open-source collection of scripts in 2015.
 
-After that, things got quiet but I got back to it in 2018.
+After that, things got quiet but I got back to it in 2018. I finally worked out the font format, level fruits, and more.
 
 TODO: expand
 
