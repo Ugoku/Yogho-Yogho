@@ -63,7 +63,7 @@ class Tiles extends Yogho
 	 *
 	 * @param string|null $filename
 	 */
-	public function toImage(string $filename = null)
+	public function toImage(?string $filename = null)
 	{
 		set_time_limit(60);
 		if (is_null($filename)) {
@@ -74,7 +74,6 @@ class Tiles extends Yogho
         @mkdir('./tiles');
 
         imagepng($image, './tiles/' . $filename . '.png');
-		imagedestroy($image);
 	}
 
 

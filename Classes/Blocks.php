@@ -93,7 +93,7 @@ class Blocks extends Yogho
 	}
 
 
-	public function toImage(string $filename = null)
+	public function toImage(?string $filename = null)
 	{
 		set_time_limit(60);
 		if (is_null($filename)) {
@@ -112,6 +112,5 @@ class Blocks extends Yogho
         @mkdir('./blocks');
 
         imagepng($image, './blocks/' . $filename . '.png');
-		ImageDestroy ($image);
 	}
 }

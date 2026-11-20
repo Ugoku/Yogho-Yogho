@@ -78,7 +78,6 @@ class Palette extends Yogho
             $filename = './palettes/' . $filename . '.png';
         }
 		imagepng($image, $filename);
-		imagedestroy($image);
 	}
 
 

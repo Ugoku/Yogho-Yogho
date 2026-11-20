@@ -81,7 +81,7 @@ class Level extends Yogho
         return $tempBlock;
     }
 
-	public function toImage($filename = null)
+	public function toImage(?string $filename = null)
 	{
         if (is_null($filename)) {
             header('Content-type: image/png');
