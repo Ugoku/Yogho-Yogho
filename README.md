@@ -39,9 +39,12 @@ Those tiles are combined into 512 blocks, consisting of 2x2 tiles each. Each til
 
 The blocks are the real basis for the levels. They are combined with collision data so the game knows where the player can stand and where there is air.
 
+## Collision
 _Information on collision will follow soon._
 
 # How objects work
+
+Objects are everything in the level that is not part of the background layer. Things as the player, doors, enemies, fruit, etc.
 
 _Information on objects will follow soon._
 
@@ -52,7 +55,13 @@ Music is stored in ScreamTracker 3 (.s3m) format. All instruments are Adlib inst
 
 # How the fonts works
 
-There are two fonts in the game. _More information on fonts will follow soon._
+There are two fonts in the game. One used for the start screen, and one used for all levels. They use slightly different colours and glyphs.
+
+_More information on fonts will follow soon._
+
+# High score table
+
+High scores are stored in `YOGHOHI.DAT`. _More information will follow soon._
 
 # Other things
 

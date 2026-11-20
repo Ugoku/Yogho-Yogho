@@ -3,7 +3,7 @@ namespace Yogho;
 
 class Palette extends Yogho
 {
-	public $palette;
+	public array $palette;
 
 
 	/**
@@ -11,7 +11,7 @@ class Palette extends Yogho
 	 *
 	 * @param int|string $level Level to get the palette for. This can also be 'start' to get the palette for the start screen
 	 */
-	public function __construct(string $level = 'start')
+	public function __construct(string|int $level = 'start')
 	{
 		$offsets = new Offsets;
 		if ($level === 'start') {
@@ -65,7 +65,7 @@ class Palette extends Yogho
 	 *
 	 * @param string|null $filename File to output the palette to. If null, it will be rendered to the browser
 	 */
-	public function toImage(string $filename = null)
+	public function toImage(?string $filename = null)
 	{
 		if (is_null($filename)) {
 			header('Content-type: image/png');

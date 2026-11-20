@@ -1,14 +1,13 @@
 <?php
-include('Classes\Yogho.php');
-include('Classes\Offsets.php');
-include('Classes\Palette.php');
+include('./Classes/Yogho.php');
+include('./Classes/Offsets.php');
+include('./Classes/Palette.php');
 
-$w = 7;
-$h = 9;
-$nr = 40;
+$width = 7;
+$height = 9;
+$glyphs = 40;
+$level = '1'; // Either 'start' or '1' (or 2..6, but that has the same result)
 
-$level = 'start';
-// Palette
 $paletteModel = new \Yogho\Palette($level);
 $palette = $paletteModel->palette;
 
@@ -18,24 +17,24 @@ $offset = ($level === 'start' ? 692593 : 695365);
 fseek($handle, $offset);
 
 header("Content-type: image/png");
-$plaatje = imagecreatetruecolor($w * $nr, $h);
-imagefilledrectangle($plaatje, 0, 0, $w, $h, 0xffffff);
+$image = imagecreatetruecolor($width * $glyphs, $height);
+imagefilledrectangle($image, 0, 0, $width, $height, 0xffffff);
 
-for ($i = 0; $i < $nr; $i++) {
-    $baseX = $i * $w;
+for ($i = 0; $i < $glyphs; $i++) {
+    $baseX = $i * $width;
     $xs = [0, 4, 1, 5, 2, 6, 3];
     foreach ($xs as $x) {
-        for ($y = 0; $y < $h; $y++) {
+        for ($y = 0; $y < $height; $y++) {
             $n = ord(fread($handle, 1));
             if ($n > 0) {
-                $thiscol = imagecolorallocate($plaatje, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
-                imagesetpixel($plaatje, $baseX + $x, $y, $thiscol);
+                $thiscol = imagecolorallocate($image, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
+                imagesetpixel($image, $baseX + $x, $y, $thiscol);
             } else {
-                imagesetpixel($plaatje, $baseX + $x, $y, 0xffffff);
+                imagesetpixel($image, $baseX + $x, $y, 0xffffff);
             }
         }
     }
 
 }
 fclose($handle);
-imagepng($plaatje);
+imagepng($image, 'font_' . $level . '.png');
