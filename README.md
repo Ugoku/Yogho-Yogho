@@ -32,6 +32,32 @@ There were a few parts that stood out: one part of exactly 12800 bytes, two of 6
 
 For more information, see [Classes/Offsets.php](Classes/Offsets.php)
 
+# Where data is stored
+Most game related data is stored in `YOGHODAT.DAT`. The file starts with 91 offsets, each 4 bytes, totalling 364 bytes. After this offset list, the entries start. The last offset in the list is the end of the file.
+
+## List of entries
+
+| Entry | Size | Contents |
+|---|---|---|
+| 0 | 12800 | **HUD background** (status bar: Punten / Dromen / Veld / Energie, Yogho Yogho logo): 320×40 linear 8-bit, uncompressed, uses the sprite palette.|
+| 1 | 1833 | **Level fruit**: the image indicating each level (i.e. orange for level 1)|
+| 2 | 51499 | **Ending picture**: RLE 320×200 + palette + RLE 216×141 text panel |
+| 3 | 576 | **Sprite palette**, 192 colours (colours 64-255) |
+| 4–9 | 31107 - 118399 | **Intro animations** ("Introductie"), delta-compressed 320×200 frames|
+| 10 | 768 | **Title screen palette** (256 colours) |
+| 11 | 64000 | **Title screen**, 320×200 linear 8-bit. Uses palette from entry 10|
+| 12 | 64000 | **High-score table background**, 320×200 linear 8-bit. Uses palette from entry 10|
+| 13 | 48000 | **Level-intro background**, 320×150|
+| 14, 15 | 2772 | **Fonts**, 40 glyphs × 7×9 bytes |
+| 16..65 | | 10 sets of 5: palette, blocks, tiles, map, collision|
+| 66–73 | | **Music**: ScreamTracker 3 modules (S3M) with AdLib instruments. Entries 66/67/68 are level themes, 73 is used for all bonus levels, 69 for the ending, 70/71 loaded at startup |
+| 74 | 4284 | **HUD graphics** (status bar panels, score-digit background, energy glass), planar images|
+| 75 | 54779 | **Title/high-score graphics**, planar images, title palette. Uses palette from entry 10 |
+| 76 | 82816 | Data for the credits program (entry 89) |
+| 77–82 | 93972 … 107726 | **Overlays per level** Object/enemy code + sprites|
+| 83–88 | ~37 KB | **Overlays per bonus level** |
+| 89 | 14936 | **End credits program**|
+
 # How levels work
 First, there are tiles. Tiles are 16x16 pixels and are level-specific. Tiles can use 64 level-specific colors, combined with 192 global colors. Each level has ~400-500 tiles.
 
@@ -40,7 +66,7 @@ Those tiles are combined into 512 blocks, consisting of 2x2 tiles each. Each til
 The blocks are the real basis for the levels. They are combined with collision data so the game knows where the player can stand and where there is air.
 
 ## Collision
-_Information on collision will follow soon._
+There are 26 different collision shapes, each 16x16 in size. Collision, like tiles, can be mirrored and/or flipped.  _More information on collision will follow soon._
 
 # How objects work
 
