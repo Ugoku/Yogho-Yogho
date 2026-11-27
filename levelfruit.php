@@ -10,61 +10,44 @@ $palette = $paletteModel->palette;
 $handle = fopen('YOGHODAT.DAT', 'rb');
 fseek($handle, 13164);
 
-$orderLevels1Through3 = [
-    0, 4, 8, 12, 16,
-    1, 5, 9, 13, 17,
-    2, 6, 10, 14, 18,
-    3, 7, 11, 15
-];
-$orderLevel4 = [
-    0, 4, 8, 12, 16,
-    1, 5, 9, 13, 17,
-    2, 6, 10, 14,
-    3, 7, 11, 15
-];
-$orderLevel5 = [
-    0, 4, 8, 12, 16,
-    1, 5, 9, 13, 17,
-    2, 6, 10, 14, 18,
-    3, 7, 11, 15
-];
-$orderLevel6 = [
-    0, 4, 8, 12,
-    1, 5, 9, 13,
-    2, 6, 10, 14,
-    3, 7, 11,
-];
+/**
+ * @return int[]
+ */
+function planarColumnOrder(int $width): array
+{
+    $order = [];
+    for ($plane = 0; $plane < 4; $plane++) {
+        for ($x = $plane; $x < $width; $x += 4) {
+            $order[] = $x;
+        }
+    }
+    return $order;
+}
 
 $levels = [
     1 => [
         'w' => 19,
         'h' => 17,
-        'order' => $orderLevels1Through3,
     ],
     2 => [
         'w' => 19,
         'h' => 17,
-        'order' => $orderLevels1Through3,
     ],
     3 => [
         'w' => 19,
         'h' => 17,
-        'order' => $orderLevels1Through3,
     ],
     4 => [
         'w' => 18,
         'h' => 16,
-        'order' => $orderLevel4,
     ],
     5 => [
         'w' => 19,
         'h' => 16,
-        'order' => $orderLevel5,
     ],
     6 => [
         'w' => 16,
         'h' => 17,
-        'order' => $orderLevel6,
     ],
 ];
 
@@ -79,7 +62,7 @@ imagecolortransparent($image, imagecolorallocate($image, $palette[0][0], $palett
 
 $baseX = 0;
 foreach ($levels as $level) {
-    foreach ($level['order'] as $x) {
+    foreach (planarColumnOrder($level['w']) as $x) {
         for ($y = 0; $y < $level['h']; $y++) {
             $n = ord(fread($handle, 1));
             $col = imagecolorallocate($image, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
