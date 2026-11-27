@@ -1,7 +1,7 @@
 <?php
-include('Classes\Yogho.php');
-include('Classes\Offsets.php');
-include('Classes\Palette.php');
+include('./Classes/Yogho.php');
+include('./Classes/Offsets.php');
+include('./Classes/Palette.php');
 
 // Palette
 $paletteModel = new \Yogho\Palette('1');
@@ -74,16 +74,16 @@ foreach ($levels as $level) {
     $width += $level['w'];
     $height = max($height, $level['h']);
 }
-$plaatje = imagecreatetruecolor($width, $height);
-imagecolortransparent($plaatje, imagecolorallocate($plaatje, $palette[0][0], $palette[0][1], $palette[0][2]));
+$image = imagecreatetruecolor($width, $height);
+imagecolortransparent($image, imagecolorallocate($image, $palette[0][0], $palette[0][1], $palette[0][2]));
 
 $baseX = 0;
 foreach ($levels as $level) {
     foreach ($level['order'] as $x) {
         for ($y = 0; $y < $level['h']; $y++) {
             $n = ord(fread($handle, 1));
-            $col = imagecolorallocate($plaatje, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
-            imagesetpixel($plaatje, $baseX + $x, $y, $col);
+            $col = imagecolorallocate($image, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
+            imagesetpixel($image, $baseX + $x, $y, $col);
         }
     }
 
@@ -93,29 +93,9 @@ foreach ($levels as $level) {
 
 fclose($handle);
 
-header("Content-type: image/png");
-imagepng($plaatje);
-
-
-/*
-$baseX = 0;
-foreach ($wh as list($w, $h)) {
-    $x = 0;
-    for ($i = 0; $i < $w; $i++) {
-        for ($y = 0; $y < $h; $y++) {
-            $n = ord(fread($handle, 1));
-            $col = imagecolorallocate($plaatje, $palette[$n][0], $palette[$n][1], $palette[$n][2]);
-            imagesetpixel($plaatje, $baseX + $x, $y, $col);
-        }
-
-        $x += 4;
-        if ($x >= $w) {
-            $x = $x % $w;
-            if ($x === 0) {
-                $x = 1;
-            }
-        }
-    }
-
-    $baseX += $w;
-}*/
+if (php_sapi_name() === 'cli') {
+    header('Content-type: image/png');
+    imagepng($image, 'export/levelfruit.png');
+} else {
+    imagepng($image);
+}
