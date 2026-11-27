@@ -39,10 +39,10 @@ Most game related data is stored in `YOGHODAT.DAT`. The file starts with 91 offs
 
 | Entry | Size | Contents |
 |---|---|---|
-| 0 | 12800 | **HUD background** (status bar: Punten / Dromen / Veld / Energie, Yogho Yogho logo): 320×40 linear 8-bit, uncompressed, uses the sprite palette.|
+| 0 | 12800 | **[HUD background](#hud-background)**|
 | 1 | 1833 | **Level fruit**: the image indicating each level (i.e. orange for level 1)|
 | 2 | 51499 | **Ending picture**: RLE 320×200 + palette + RLE 216×141 text panel |
-| 3 | 576 | **Sprite palette**, 192 colours (colours 64-255) |
+| 3 | 576 | **[Sprite palette](#sprite-palette)**, 192 colours (colours 64-255) |
 | 4–9 | 31107 - 118399 | **Intro animations** ("Introductie"), delta-compressed 320×200 frames|
 | 10 | 768 | **Title screen palette** (256 colours) |
 | 11 | 64000 | **Title screen**, 320×200 linear 8-bit. Uses palette from entry 10|
@@ -50,13 +50,19 @@ Most game related data is stored in `YOGHODAT.DAT`. The file starts with 91 offs
 | 13 | 48000 | **Level-intro background**, 320×150|
 | 14, 15 | 2772 | **Fonts**, 40 glyphs × 7×9 bytes |
 | 16..65 | | 10 sets of 5: palette, blocks, tiles, map, collision|
-| 66–73 | | **Music**: ScreamTracker 3 modules (S3M) with AdLib instruments. Entries 66/67/68 are level themes, 73 is used for all bonus levels, 69 for the ending, 70/71 loaded at startup |
+| 66–73 | 2180 - 8246| **Music**: ScreamTracker 3 modules (S3M) with AdLib instruments. Entries 66/67/68 are level themes, 73 is used for all bonus levels, 69 for the ending, 70/71 loaded at startup |
 | 74 | 4284 | **HUD graphics** (status bar panels, score-digit background, energy glass), planar images|
 | 75 | 54779 | **Title/high-score graphics**, planar images, title palette. Uses palette from entry 10 |
 | 76 | 82816 | Data for the credits program (entry 89) |
 | 77–82 | 93972 … 107726 | **Overlays per level** Object/enemy code + sprites|
 | 83–88 | ~37 KB | **Overlays per bonus level** |
 | 89 | 14936 | **End credits program**|
+
+# HUD background
+The HUD is 320x40 pixels, and shown at the bottom of the screen. It uses the [sprite palette](#sprite-palette) to construct the image, which is stored as plain palette indices, i.e. 40 rows of 320 pixels wide. 
+
+# Sprite palette
+_Information on palettes will follow soon. In the meantime, read the "How did I figure this out" section._
 
 # How levels work
 First, there are tiles. Tiles are 16x16 pixels and are level-specific. Tiles can use 64 level-specific colors, combined with 192 global colors. Each level has ~400-500 tiles.
@@ -66,11 +72,11 @@ Those tiles are combined into 512 blocks, consisting of 2x2 tiles each. Each til
 The blocks are the real basis for the levels. They are combined with collision data so the game knows where the player can stand and where there is air.
 
 ## Collision
-There are 26 different collision shapes, each 16x16 in size. Collision, like tiles, can be mirrored and/or flipped.  _More information on collision will follow soon._
+There are 26 different collision shapes, each 16x16 in size. Collision, like tiles, can be mirrored and/or flipped. _More information on collision will follow soon._
 
 # How objects work
 
-Objects are everything in the level that is not part of the background layer. Things as the player, doors, enemies, fruit, etc.
+Objects are everything in the level that is not part of the background layer. Things as the player, doors, enemies, fruit, etc. These are *not* stored in the `YOGHODAT.DAT` file, but in `YOGHO.EXE` as compiled routines.
 
 _Information on objects will follow soon._
 
